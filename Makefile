@@ -1,4 +1,4 @@
-SRC = mandatory/main.c mandatory/life.c mandatory/init.c mandatory/utils.c mandatory/del.c mandatory/ft_split.c
+SRC = mandatory/main.c mandatory/life.c mandatory/init.c mandatory/utils.c mandatory/del.c mandatory/ft_split.c mandatory/brain.c
 
 OBJ = ${SRC:.c=.o}
 

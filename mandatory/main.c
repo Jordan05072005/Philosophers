@@ -14,7 +14,6 @@
 
 int	main(int argc, char **argv)
 {
-	pthread_t	*philosopher;
 	t_param		*arg;
 	int			i;
 	char		**str;
@@ -25,12 +24,16 @@ int	main(int argc, char **argv)
 	if (parseur(argc, argv, str) != 0)
 		return (free_split(str), 1);
 	i = -1;
-	philosopher = malloc(sizeof(pthread_t) * ft_atoi(argv[1]));
 	arg = create_argument(argc, argv);
 	while (++i < ft_atoi(argv[1]))
-		philosopher[i] = create_philo(life, &arg, i, str);
+		create_philo(&arg, i, str);
 	i = -1;
 	while (++i < ft_atoi(argv[1]))
-		pthread_join(philosopher[i], NULL);
-	free_all(&arg, str, philosopher);
+		pthread_create(&arg->philo[i].philo, NULL, life, &arg->philo[i]);
+	pthread_create(&arg->brain, NULL, brain, arg);
+	i = -1;
+	while (++i < ft_atoi(argv[1]))
+		pthread_join(arg->philo[i].philo, NULL);
+	pthread_join(arg->brain, NULL);
+	free_all(&arg, str);
 }

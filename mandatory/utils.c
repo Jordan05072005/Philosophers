@@ -34,20 +34,30 @@ long	ft_atoi(const char *nptr)
 	return (res * sign);
 }
 
-long	gettime(t_philo *p)
+long	gettime(long starttime)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return (((tv.tv_sec * 1000 + (tv.tv_usec) / 1000) - (p->start_time)));
+	return (((tv.tv_sec * 1000 + (tv.tv_usec) / 1000) - (starttime)));
 }
 
-void	mess(char *cause, int id, long time, int nbr)
+int	mess(char *cause, t_philo *p, long time, int nbr)
 {
-	if (nbr == -1)
-		printf("%ld_in_ms %d %s\n", time, id, cause);
+	if (nbr < 0)
+	{
+		pthread_mutex_lock(p->print);
+		printf("%ld : %d %s\n", time, p->id, cause);
+		if (nbr == -2)
+			printf("%ld : %d %s\n", time, p->id, cause);
+		return (pthread_mutex_unlock(p->print));
+	}
 	else
-		printf("%ld_in_ms %d %s (%d)\n", time, id, cause, nbr);
+	{
+		pthread_mutex_lock(p->print);
+		printf("%ld : %d %s (%d)\n", time, p->id, cause, nbr);
+		return (pthread_mutex_unlock(p->print));
+	}
 }
 
 int	ft_strstrlen(char **str)
