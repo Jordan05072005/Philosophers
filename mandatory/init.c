@@ -12,9 +12,23 @@
 
 #include "../include/philosophers.h"
 
+int	pars2(char **str, int i)
+{
+	int	j;
+
+	j = -1;
+	while (++j < ft_strlen(str[i]))
+	{
+		if (str[i][j] < '0' || str[i][j] > '9')
+			return (1);
+	}
+	return (0);
+}
+
 int	parseur(int argc, char **argv, char **str)
 {
 	int	i;
+	int	j;
 
 	i = -1;
 	if (argc != 5 && argc != 6)
@@ -23,14 +37,14 @@ int	parseur(int argc, char **argv, char **str)
 		return (write(2, "Nous devons avoir au moins un philosopher\n", 42));
 	if (ft_atoi(argv[2]) < 60 || ft_atoi(argv[3]) < 60 || ft_atoi(argv[4]) < 60)
 		return (write(2, "Donner au moins 60 ms\n", 22));
-	if (argc == 6 && ft_strstrlen(str) != ft_atoi(argv[1])
+	if (argc == 6 && ft_strstrlen(str) > ft_atoi(argv[1])
 		&& ft_strstrlen(str) != 1)
 		return (1);
 	while (argc == 6 && str[++i])
 	{
-		if (ft_atoi(str[i]) < 0)
+		if (ft_atoi(str[i]) < 0 || pars2(str, i))
 		{
-			write(2, "On peut pas manger négativement !\n", 34);
+			write(2, "Incorrect entry\n", 16);
 			return (1);
 		}
 	}
@@ -53,12 +67,12 @@ pthread_t	create_philo(t_param **tab, int i, char **str)
 	(*tab)->philo[i].print = &(*tab)->print;
 	pthread_mutex_init(&(*tab)->philo[i].last_eat_m, NULL);
 	pthread_mutex_init(&(*tab)->philo[i].n_eat_m, NULL);
-	if (!str)
-		(*tab)->philo[i].max_eat = -1;
-	else if (ft_strstrlen(str) == 1)
+	if (str && ft_strstrlen(str) == 1)
 		(*tab)->philo[i].max_eat = ft_atoi(str[0]);
-	else if (str)
+	else if (str && ft_strstrlen(str) > i)
 		(*tab)->philo[i].max_eat = ft_atoi(str[i]);
+	else
+		(*tab)->philo[i].max_eat = -1;
 	(*tab)->philo[i].last_eat = 0;
 	return ((*tab)->philo[i].philo);
 }
