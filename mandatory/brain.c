@@ -15,22 +15,25 @@
 int	philo_finish_eat(t_param **p)
 {
 	int	i;
+	int	temp;
 
 	i = -1;
+	temp = 0;
 	while (++i < (*p)->n_philo)
 	{
 		pthread_mutex_lock(&(*p)->philo[i].n_eat_m);
-		if ((*p)->philo[i].n_eat == (*p)->philo[i].max_eat)
-		{
-			pthread_mutex_unlock(&(*p)->philo[i].n_eat_m);
-			pthread_mutex_lock((*p)->philo[i].death);
-			*(*p)->philo[i].is_dead = 1;
-			pthread_mutex_unlock((*p)->philo[i].death);
-			mess("is satified", &(*p)->philo[i],
-				gettime((*p)->philo[i].start_time), -1);
-			return (1);
-		}
+		if ((*p)->philo[i].n_eat >= (*p)->philo[i].max_eat)
+			temp++;
 		pthread_mutex_unlock(&(*p)->philo[i].n_eat_m);
+	}
+	if (temp == (*p)->n_philo)
+	{
+		pthread_mutex_lock((*p)->philo[0].death);
+		*(*p)->philo[0].is_dead = 1;
+		pthread_mutex_unlock((*p)->philo[0].death);
+		printf("%ld : all is satified\n",
+			gettime((*p)->philo[0].start_time));
+		return (1);
 	}
 	return (0);
 }
